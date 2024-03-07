@@ -1,8 +1,18 @@
 import pybullet as p
 
-def load_table(physics_client_id):
+def load_table(physics_client_id, base_position=[0,0,0]):
+    """
+    Load a table into the PyBullet simulation
+
+    Parameters
+    - physics_client_id: The ID of the physics client where the table will be loaded.
+    - base_position: The starting position of the table as a list [x, y, z].
+
+    Returns:
+    - table_id: The ID Of the loaded Table
+    """
     # Load table
-    table_id = p.loadURDF("table/table.urdf", basePosition=[0,0,0], physicsClientId=physics_client_id)
+    table_id = p.loadURDF("table/table.urdf", basePosition=base_position, physicsClientId=physics_client_id)
     return table_id
 
 
