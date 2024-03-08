@@ -5,7 +5,7 @@ import time
 
 
 TABLE_HEIGHT = 1
-CUBE_SIZE = 0.2
+CUBE_SIZE = 0.1
 
 def main():
     physics_client_id = setup_environment()
