@@ -1,44 +1,35 @@
-from simulation.environment import setup_environment
-from simulation.objects import load_table, load_cube
 import pybullet as p
+import pybullet_data
 import time
 
-
-TABLE_HEIGHT = 1
-CUBE_SIZE = 0.1
-
 def main():
-    physics_client_id = setup_environment()
+    physicsClient = p.connect(p.GUI)
 
-    # Load table
-    load_table(physics_client_id)
-    
-    # Load cubes on top of the table at different positions
-    load_cube(
-            physics_client_id,
-            base_position = [0.2, 0, TABLE_HEIGHT + CUBE_SIZE/2],
-            cube_size = CUBE_SIZE
-    )
+    # Load URDF
+    p.setGravity(0, 0, -9.81)
+    planeId = p.loadURDF("plane.urdf")
+    tableId = p.loadURDF("table/table.urdf", basePosition = [0.5, 0, -0.65])
+    blockId = p.loadURDF("block.urdf", basePosition = [0.5, 0, -0.2])
+    robotId = p.loadURDF("kuka_iiwa/model.urdf", basePosition = [0,0,0])
 
-    load_cube(
-        physics_client_id,
-        base_position = [0, 0.2, TABLE_HEIGHT + CUBE_SIZE/2],
-        cube_size = CUBE_SIZE
-    )
+    # Calculate inverse kinematics for robot arm
+    targetPosition = [0.5, 0, 0]
+    targetOrientation = p.getQuaternionFromEuler([0,0,0])
+    jointPosition = p.calculateInverseKinematics(robotId, 6, targetPosition, targetOrientation)
 
-    load_cube(
-        physics_client_id,
-        base_position = [-0.2, -0.2, TABLE_HEIGHT + CUBE_SIZE/2],
-        cube_size = CUBE_SIZE
-    )
+    # Apply joint positions to reach for the block
+    for i, jointPosition in enumerate(jointPosition):
+        p.setJointMotorControl2(robotId, i, p.POSITION_CONTROL, targetPosition = jointPosition)
 
     # Simulation Loop
-    for i in range(10000):
+    for i in range(100):
         p.stepSimulation()
         time.sleep(1./240.)
-
+    
     p.disconnect()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+    print("Running Simulation")
     main()
+    
