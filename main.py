@@ -11,9 +11,9 @@ def main():
     # Load URDF
     p.setGravity(0, 0, -9.81)
     planeId = p.loadURDF("plane.urdf")
-    tableId = p.loadURDF("table/table.urdf", basePosition = [0.5, 0, -0.65])
+    tableId = p.loadURDF("table/table.urdf", basePosition = [0.5, 0, 0])
     blockId = p.loadURDF("block.urdf", basePosition = [0.5, 0, -0.2])
-    robotId = p.loadURDF("kuka_iiwa/model.urdf", basePosition = [0,0,0])
+    robotId = p.loadURDF("kuka_iiwa/model.urdf", basePosition = [0,0,1])
 
     # Calculate inverse kinematics for robot arm
     targetPosition = [0.5, 0, 0]
@@ -25,7 +25,7 @@ def main():
         p.setJointMotorControl2(robotId, i, p.POSITION_CONTROL, targetPosition = jointPosition)
 
     # Simulation Loop
-    for i in range(100):
+    while (True):
         p.stepSimulation()
         time.sleep(1./240.)
     
