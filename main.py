@@ -5,6 +5,9 @@ import time
 def main():
     physicsClient = p.connect(p.GUI)
 
+    # Add pybullet_data search path
+    p.setAdditionalSearchPath(pybullet_data.getDataPath())
+
     # Load URDF
     p.setGravity(0, 0, -9.81)
     planeId = p.loadURDF("plane.urdf")
@@ -32,4 +35,3 @@ def main():
 if __name__ == '__main__':
     print("Running Simulation")
     main()
-    
