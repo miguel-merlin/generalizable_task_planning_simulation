@@ -3,6 +3,7 @@ import pybullet_data
 import numpy as np
 import h5py
 import time
+import os
 
 
 def initialize_simulation():
@@ -12,8 +13,27 @@ def initialize_simulation():
     p.loadURDF("plane.urdf")
     robot_id = p.loadURDF("franka_panda/panda.urdf", basePosition=[0,0,0], useFixedBase = True)
     table_id = p.loadURDF("table/table.urdf", basePosition = [0.5, 0, 0])
-    object_id = p.loadURDF("random_urdf_objects/000/000.urdf", basePosition = [0.5, 0, 0.5])
-    return robot_id, object_id
+
+    base_position=[0,0,1]
+    base_orientation=[0,0,0,1]
+    cube_size=1
+    mass=1
+    collision_shape_id = p.createCollisionShape(shapeType = p.GEOM_BOX, halfExtents = [cube_size/2]*3)
+    visual_shape_id = p.createVisualShape(
+                shapeType = p.GEOM_BOX,
+                halfExtents = [cube_size/2]*3,
+                rgbaColor=[1,0,0,1]
+            )
+
+    # Create the Cube
+    cube_id = p.createMultiBody(
+                baseMass = mass,
+                baseCollisionShapeIndex = collision_shape_id,
+                baseVisualShapeIndex = visual_shape_id,
+                basePosition = base_position,
+                baseOrientation = base_orientation,
+            )
+    return robot_id, cube_id
 
 def get_joint_states(robot_id):
     joint_states = p.getJointStates(robot_id, range(p.getNumJoints(robot_id)))
@@ -73,11 +93,14 @@ def save_to_hdf5(filename, data):
             hf.create_dataset(key, data=value)
 
 def main():
+    print("Initializing simulation")
     robot_id, object_id = initialize_simulation()
 
+    print("Creating dataset")
     # Generate dataset
-    data = create_dataset(num_samples=100, robot_id=robot_id, object_id=object_id)
+    data = create_dataset(num_samples=2, robot_id=robot_id, object_id=object_id)
 
+    print("Saving dataset")
     # Save dataset to HDF5
     dataset = {
         "point_clouds": data[0],
@@ -85,9 +108,10 @@ def main():
         "joint_states": data[2],
         "targets": data[3]
     }
-    save_to_hdf5('robot_reach_dataset.h5', dataset)
+    path = os.path.join("dataset", "robot_reach_dataset.h5")
+    save_to_hdf5(path, dataset)
 
-    print("Dataset saved to 'robot_reach_dataset.h5'")
+    print("Dataset saved to 'dataset/robot_reach_dataset.h5'")
     p.disconnect()
 
 
