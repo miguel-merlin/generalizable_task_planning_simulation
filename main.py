@@ -41,7 +41,10 @@ def get_joint_states(robot_id):
     return joint_positions
 
 def simulate_reach(robot_id, target_position):
-    # Move robot's end effector to target position
+    """
+    
+    """
+    # Move the robot's end effector to the target position
     # TODO: Add motion planning/control logic
     simulation_steps = 240
     for _ in range(simulation_steps):
