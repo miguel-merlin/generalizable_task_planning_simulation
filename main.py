@@ -72,7 +72,7 @@ def create_dataset(num_samples = 10, robot_id = None, object_id = None):
         # TODO: Add correct binary_mask
         binary_mask = [1.0] * 3
 
-        # TODO: Change to target joint states or positions
+        # TODO: Change to target joint states and positions
         target = joint_state
 
         point_clouds.append(point_cloud.flatten())
